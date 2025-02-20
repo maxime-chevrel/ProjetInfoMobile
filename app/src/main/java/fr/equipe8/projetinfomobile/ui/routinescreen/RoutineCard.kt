@@ -1,4 +1,4 @@
-package fr.equipe8.projetinfomobile.presentation.components
+package fr.equipe8.projetinfomobile.ui.routinescreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import fr.equipe8.projetinfomobile.data.Routine
+import fr.equipe8.projetinfomobile.data.routines.Routine
 
 @Composable
 fun RoutineCard(routine: Routine){
