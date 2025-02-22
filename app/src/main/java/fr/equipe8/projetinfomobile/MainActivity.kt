@@ -40,9 +40,17 @@ fun App() {
     NavHost(navController = navController,
         startDestination = ScreenRoute.RoutinesListScreen.route
     ) {
-        composable(ScreenRoute.RoutinesListScreen.route) {
+        composable(route=ScreenRoute.RoutinesListScreen.route+"?returnAction={returnAction}",
+            arguments = listOf(
+                navArgument(name = "returnAction") {
+                    type = NavType.IntType
+                    defaultValue=0
+                }
+            )){
+            navBackStackEntry ->
             val viewModel: RoutinesListViewModel = hiltViewModel()
-            RoutinesListScreen(navController, viewModel)
+            val returnAction = navBackStackEntry.arguments?.getInt("returnAction") ?: 0
+            RoutinesListScreen(navController, viewModel,returnAction)
         }
         composable(ScreenRoute.AddEditRoutineScreen.route+"?routineId={routineId}",
             arguments = listOf(

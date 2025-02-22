@@ -12,7 +12,7 @@ interface RoutineDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(routine: Routine)
 
-    @Query("SELECT * FROM routines")
+    @Query("SELECT * FROM routines ORDER BY hour, minute")
     suspend fun getAllRoutines(): List<Routine>
 
     @Query("SELECT * FROM routines WHERE id = :taskId")

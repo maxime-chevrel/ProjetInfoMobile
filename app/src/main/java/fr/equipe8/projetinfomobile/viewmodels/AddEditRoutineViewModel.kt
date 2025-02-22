@@ -48,4 +48,9 @@ class AddEditRoutineViewModel @Inject constructor(
             repository.addRoutine(_routine.value)
         }
     }
+    fun deleteRoutine() {
+        viewModelScope.launch {
+            repository.removeRoutine(_routine.value)
+        }
+    }
 }
