@@ -1,7 +1,5 @@
 package fr.equipe8.projetinfomobile.data.routines
 
-import android.content.Context
-
 class RoutineRepository (private val dao: RoutineDao) {
     //Fast external functions
     suspend fun getRoutines(): List<Routine> = dao.getAllRoutines()

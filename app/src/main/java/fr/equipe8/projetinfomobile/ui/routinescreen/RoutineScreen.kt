@@ -35,8 +35,8 @@ fun RoutineScreen(navController: NavController, viewModel: RoutineScreenViewMode
                 Icon(imageVector = Icons.Default.Add,
                     contentDescription = "Ajouter une Routine")
             }
-    }) {contentPading->
-        Column(modifier = Modifier.padding(contentPading)) {
+    }) {contentPadding->
+        Column(modifier = Modifier.padding(contentPadding)) {
             Text("Routines",
                 modifier= Modifier
                     .fillMaxWidth()
@@ -46,7 +46,7 @@ fun RoutineScreen(navController: NavController, viewModel: RoutineScreenViewMode
                     textAlign = TextAlign.Center
                 )
             )
-            Text("Total de stories: 0",
+            Text("Total de routines: ${routines.value.count()}",
                 modifier = Modifier
                     .padding(8.dp),
                 style = TextStyle(
@@ -57,7 +57,11 @@ fun RoutineScreen(navController: NavController, viewModel: RoutineScreenViewMode
             )
             LazyColumn {
                 itemsIndexed(routines.value) { _, routine ->
-                    Text(routine.name)
+                    RoutineCard(routine,
+                        {
+                            navController.navigate("addEditRoutineScreen?routineId=${routine.id}")
+                        }
+                    )
                 }
             }
         }

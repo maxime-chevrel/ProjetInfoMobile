@@ -27,11 +27,4 @@ class RoutineScreenViewModel @Inject constructor(
             _routines.value = repository.getRoutines()
         }
     }
-
-    fun addRoutine(routine: Routine) {
-        viewModelScope.launch {
-            repository.addRoutine(routine)
-            fetchRoutines() //Refresh
-        }
-    }
 }
