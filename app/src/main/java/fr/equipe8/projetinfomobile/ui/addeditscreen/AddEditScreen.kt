@@ -77,7 +77,9 @@ fun AddEditScreen(navController: NavController, routineId: Long?) {
                 onValueChange = {
                 viewModel.onRoutineChanged(routine.copy(description = it))
             })
-            Button(onClick = {timePickerDialog.show()}) {
+            Button(onClick = {
+                timePickerDialog.show()
+            }) {
                 Text("Time: ${routine.hour}:${routine.minute}")
             }
         }
