@@ -31,17 +31,13 @@ fun AddEditScreen(navController: NavController, routineId: Long?) {
 
 
     val context = LocalContext.current
-    val time = remember { mutableStateOf("") }
-
     val calendar = Calendar.getInstance()
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
     val timePickerDialog = TimePickerDialog(
         context,
         { _, selectedHour, selectedMinute ->
             viewModel.onRoutineChanged(routine.copy(hour=selectedHour, minute = selectedMinute))
         },
-        hour, minute, true
+        calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
     )
 
     LaunchedEffect(routineId) {
