@@ -12,9 +12,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import fr.equipe8.projetinfomobile.ui.addeditscreen.AddEditScreen
-import fr.equipe8.projetinfomobile.ui.routinescreen.RoutineScreen
-import fr.equipe8.projetinfomobile.viewmodels.RoutineScreenViewModel
+import fr.equipe8.projetinfomobile.navigation.ScreenRoute
+import fr.equipe8.projetinfomobile.ui.addeditscreen.AddEditRoutineScreen
+import fr.equipe8.projetinfomobile.ui.routinescreen.RoutinesListScreen
+import fr.equipe8.projetinfomobile.viewmodels.RoutinesListViewModel
 import fr.equipe8.projetinfomobile.ui.theme.ProjetInfoMobileTheme
 
 @AndroidEntryPoint
@@ -37,13 +38,13 @@ fun App() {
     val navController = rememberNavController()
 
     NavHost(navController = navController,
-        startDestination = "routineScreen"
+        startDestination = ScreenRoute.RoutinesListScreen.route
     ) {
-        composable("routineScreen") {
-            val viewModel: RoutineScreenViewModel = hiltViewModel()
-            RoutineScreen(navController, viewModel)
+        composable(ScreenRoute.RoutinesListScreen.route) {
+            val viewModel: RoutinesListViewModel = hiltViewModel()
+            RoutinesListScreen(navController, viewModel)
         }
-        composable("addEditRoutineScreen?routineId={routineId}",
+        composable(ScreenRoute.AddEditRoutineScreen.route+"?routineId={routineId}",
             arguments = listOf(
                 navArgument(name = "routineId") {
                     type = NavType.LongType
@@ -51,7 +52,7 @@ fun App() {
                 }
             )) {navBackStackEntry ->
             val routineId = navBackStackEntry.arguments?.getLong("routineId") ?: -1
-            AddEditScreen(navController, routineId)
+            AddEditRoutineScreen(navController, routineId)
         }
     }
 }

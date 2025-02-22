@@ -19,12 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import fr.equipe8.projetinfomobile.viewmodels.AddEditViewModel
+import fr.equipe8.projetinfomobile.navigation.ScreenRoute
+import fr.equipe8.projetinfomobile.viewmodels.AddEditRoutineViewModel
 import java.util.Calendar
 
 @Composable
-fun AddEditScreen(navController: NavController, routineId: Long?) {
-    val viewModel: AddEditViewModel = hiltViewModel()
+fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
+    val viewModel: AddEditRoutineViewModel = hiltViewModel()
     val routine by viewModel.routine.collectAsState()
 
 
@@ -53,7 +54,7 @@ fun AddEditScreen(navController: NavController, routineId: Long?) {
             } else if (viewModel.isRoutineEdited.value) {
                 viewModel.saveRoutine()
             }
-            navController.navigate("routineScreen")
+            navController.navigate(ScreenRoute.RoutinesListScreen.route)
         }) {
             Icon(imageVector = Icons.Default.Add,
                 contentDescription = "Sauvegarder")

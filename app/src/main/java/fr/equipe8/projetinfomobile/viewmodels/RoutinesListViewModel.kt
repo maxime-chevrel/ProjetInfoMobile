@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RoutineScreenViewModel @Inject constructor(
+class RoutinesListViewModel @Inject constructor(
     private val repository: RoutineRepository): ViewModel() {
 
     private val _routines = MutableStateFlow<List<Routine>>(emptyList())

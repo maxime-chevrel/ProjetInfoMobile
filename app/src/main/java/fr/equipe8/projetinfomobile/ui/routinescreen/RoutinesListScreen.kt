@@ -21,16 +21,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import fr.equipe8.projetinfomobile.viewmodels.RoutineScreenViewModel
+import fr.equipe8.projetinfomobile.navigation.ScreenRoute
+import fr.equipe8.projetinfomobile.viewmodels.RoutinesListViewModel
 
 @Composable
-fun RoutineScreen(navController: NavController, viewModel: RoutineScreenViewModel) {
+fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListViewModel) {
     val routines = viewModel.routines.collectAsState()
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton (onClick = {
-                navController.navigate("addEditRoutineScreen?routineId=-1") //-1 = New routine
+                navController.navigate(ScreenRoute.AddEditRoutineScreen.route+"?routineId=-1") //-1 = New routine
             }) {
                 Icon(imageVector = Icons.Default.Add,
                     contentDescription = "Ajouter une Routine")
@@ -59,7 +60,7 @@ fun RoutineScreen(navController: NavController, viewModel: RoutineScreenViewMode
                 itemsIndexed(routines.value) { _, routine ->
                     RoutineCard(routine,
                         {
-                            navController.navigate("addEditRoutineScreen?routineId=${routine.id}")
+                            navController.navigate(ScreenRoute.AddEditRoutineScreen.route+"?routineId=${routine.id}")
                         }
                     )
                 }

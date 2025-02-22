@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddEditViewModel @Inject constructor(
+class AddEditRoutineViewModel @Inject constructor(
     private val repository: RoutineRepository
 ) : ViewModel() {
     private val _routine = MutableStateFlow(Routine())
