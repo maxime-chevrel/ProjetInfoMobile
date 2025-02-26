@@ -1,6 +1,5 @@
 package fr.equipe8.projetinfomobile.ui
 
-import androidx.room.PrimaryKey
 import fr.equipe8.projetinfomobile.data.routines.Routine
 
 data class RoutineVM (
