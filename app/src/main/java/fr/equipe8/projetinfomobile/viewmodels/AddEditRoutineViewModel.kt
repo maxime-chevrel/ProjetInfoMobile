@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.equipe8.projetinfomobile.data.routines.Routine
 import fr.equipe8.projetinfomobile.data.routines.RoutineRepository
+import fr.equipe8.projetinfomobile.ui.RoutineVM
+import fr.equipe8.projetinfomobile.ui.toEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -14,8 +16,8 @@ import javax.inject.Inject
 class AddEditRoutineViewModel @Inject constructor(
     private val repository: RoutineRepository
 ) : ViewModel() {
-    private val _routine = MutableStateFlow(Routine())
-    val routine: StateFlow<Routine> get() = _routine
+    private val _routine = MutableStateFlow(RoutineVM())
+    val routine: StateFlow<RoutineVM> get() = _routine
 
     private val _isRoutineEdited = MutableStateFlow(false)
     val isRoutineEdited: StateFlow<Boolean> get() = _isRoutineEdited
@@ -23,14 +25,14 @@ class AddEditRoutineViewModel @Inject constructor(
     fun getRoutineById(routineId: Long?) {
         viewModelScope.launch {
             _routine.value = if (routineId != null && routineId != -1L) {
-                repository.getRoutineById(routineId) ?: Routine()
+                repository.getRoutineById(routineId)?.let { RoutineVM.fromEntity(it) } ?: RoutineVM()
             } else {
-                Routine()
+                RoutineVM()
             }
         }
     }
 
-    fun onRoutineChanged(routine: Routine) {
+    fun onRoutineChanged(routine: RoutineVM) {
         _routine.value = routine
         _isRoutineEdited.value = true
     }
@@ -38,19 +40,19 @@ class AddEditRoutineViewModel @Inject constructor(
     fun saveRoutine() {
         if (_isRoutineEdited.value) {
             viewModelScope.launch {
-                repository.updateRoutine(_routine.value)
+                repository.updateRoutine(_routine.value.toEntity())
             }
         }
     }
 
     fun addRoutine() {
         viewModelScope.launch {
-            repository.addRoutine(_routine.value)
+            repository.addRoutine(_routine.value.toEntity())
         }
     }
     fun deleteRoutine() {
         viewModelScope.launch {
-            repository.removeRoutine(_routine.value)
+            repository.removeRoutine(_routine.value.toEntity())
         }
     }
 }

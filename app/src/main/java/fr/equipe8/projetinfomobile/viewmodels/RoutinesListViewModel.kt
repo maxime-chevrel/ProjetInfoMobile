@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.equipe8.projetinfomobile.data.routines.Routine
 import fr.equipe8.projetinfomobile.data.routines.RoutineRepository
+import fr.equipe8.projetinfomobile.ui.RoutineVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -14,8 +15,8 @@ import javax.inject.Inject
 class RoutinesListViewModel @Inject constructor(
     private val repository: RoutineRepository): ViewModel() {
 
-    private val _routines = MutableStateFlow<List<Routine>>(emptyList())
-    val routines: StateFlow<List<Routine>> get() = _routines
+    private val _routines = MutableStateFlow<List<RoutineVM>>(emptyList())
+    val routines: StateFlow<List<RoutineVM>> get() = _routines
 
     init {//Load routines
         fetchRoutines()
@@ -24,7 +25,7 @@ class RoutinesListViewModel @Inject constructor(
     //Getting all the routines
     private fun fetchRoutines() {
         viewModelScope.launch {
-            _routines.value = repository.getRoutines()
+            _routines.value = repository.getRoutines().map { RoutineVM.fromEntity(it) }
         }
     }
 }

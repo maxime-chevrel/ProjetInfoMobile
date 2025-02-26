@@ -40,10 +40,12 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import fr.equipe8.projetinfomobile.R
 import fr.equipe8.projetinfomobile.navigation.ScreenRoute
 import fr.equipe8.projetinfomobile.viewmodels.AddEditRoutineViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -73,6 +75,7 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    var job: Job? = null
 
     Scaffold(
         topBar = {
@@ -118,6 +121,10 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
                         if (viewModel.routine.value.name != "") {
                             viewModel.addRoutine()
                         } else {
+                            job?.cancel()
+                            job =scope.launch {
+                                snackbarHostState.showSnackbar("Un Nom est nécéssaire")
+                            }
                             return@FloatingActionButton
                         }
                     } else if (viewModel.isRoutineEdited.value) {

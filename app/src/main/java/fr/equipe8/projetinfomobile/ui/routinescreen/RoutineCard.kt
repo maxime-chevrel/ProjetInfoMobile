@@ -25,9 +25,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.equipe8.projetinfomobile.data.routines.Routine
+import fr.equipe8.projetinfomobile.ui.RoutineVM
 
 @Composable
-fun RoutineCard(routine: Routine, onClick: () -> Unit) {
+fun RoutineCard(routine: RoutineVM, onClick: () -> Unit) {
 
     Card(
         modifier = Modifier
