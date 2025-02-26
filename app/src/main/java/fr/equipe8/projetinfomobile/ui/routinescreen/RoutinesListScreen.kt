@@ -1,6 +1,7 @@
 package fr.equipe8.projetinfomobile.ui.routinescreen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -101,6 +102,9 @@ fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListView
                     ) {
                         navController.navigate(ScreenRoute.AddEditRoutineScreen.route + "?routineId=${routine.id}")
                     }
+                }
+                item {
+                    Spacer(modifier = Modifier.padding(50.dp))
                 }
             }
         }
