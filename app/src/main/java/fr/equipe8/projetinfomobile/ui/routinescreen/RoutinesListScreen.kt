@@ -99,11 +99,10 @@ fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListView
         ) {contentPadding->
             LazyColumn(modifier = Modifier.padding(contentPadding)) {
                 itemsIndexed(routines.value) { _, routine ->
-                    RoutineCard(routine,
-                        {
-                            navController.navigate(ScreenRoute.AddEditRoutineScreen.route+"?routineId=${routine.id}")
-                        }
-                    )
+                    RoutineCard(routine
+                    ) {
+                        navController.navigate(ScreenRoute.AddEditRoutineScreen.route + "?routineId=${routine.id}")
+                    }
                 }
             }
         }

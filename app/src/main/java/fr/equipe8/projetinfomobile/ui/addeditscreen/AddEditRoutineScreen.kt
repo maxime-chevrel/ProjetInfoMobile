@@ -4,8 +4,11 @@ import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -147,41 +150,44 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
         },
         snackbarHost = {SnackbarHost(hostState = snackbarHostState)}
     ) { contentPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(contentPadding)
                 .padding(16.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            OutlinedTextField(
-                value = routine.name,
-                label = { Text("Nom") },
-                onValueChange = {
-                    viewModel.onRoutineChanged(routine.copy(name = it))
-                },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction = ImeAction.Next
+            item {
+                OutlinedTextField(
+                    value = routine.name,
+                    label = { Text("Nom") },
+                    onValueChange = {
+                        viewModel.onRoutineChanged(routine.copy(name = it))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Next
+                    )
                 )
-            )
-            OutlinedTextField(
-                value = routine.description,
-                label = { Text("Description") },
-                onValueChange = {
-                    viewModel.onRoutineChanged(routine.copy(description = it))
-                },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction = ImeAction.Done
+                OutlinedTextField(
+                    value = routine.description,
+                    label = { Text("Description") },
+                    onValueChange = {
+                        viewModel.onRoutineChanged(routine.copy(description = it))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Done
+                    )
                 )
-            )
-            Button(onClick = {
-                timePickerDialog.show()
-            }, modifier = Modifier.fillMaxWidth()) {
-                Text("Heure: %02d:%02d".format(routine.hour,routine.minute))
+                Button(onClick = {
+                    timePickerDialog.show()
+                }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Heure: %02d:%02d".format(routine.hour, routine.minute))
+                }
+                Spacer(modifier = Modifier.height(200.dp))
             }
         }
     }
