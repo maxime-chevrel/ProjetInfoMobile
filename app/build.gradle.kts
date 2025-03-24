@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.ksp) //KSP
     id("kotlin-kapt") //Kapt
-    id("com.google.dagger.hilt.android")
-    alias(libs.plugins.kotlin.compose) //Hilt
+    id("com.google.dagger.hilt.android") //Hilt
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {

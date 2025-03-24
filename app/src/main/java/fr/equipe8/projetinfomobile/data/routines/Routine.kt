@@ -8,6 +8,7 @@ data class Routine(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name :String = "",
     val description : String = "",
-    val hour: Int = 0,
-    val minute: Int = 0
+    val hour: Byte = 0,
+    val minute: Byte = 0,
+    val daysOfWeek: Byte = 0,
 )
