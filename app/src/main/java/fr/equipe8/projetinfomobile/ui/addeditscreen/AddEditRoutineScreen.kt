@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -46,6 +48,8 @@ import fr.equipe8.projetinfomobile.navigation.ScreenRoute
 import fr.equipe8.projetinfomobile.viewmodels.AddEditRoutineViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
+import java.time.DayOfWeek
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +67,7 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
     val timePickerDialog = TimePickerDialog(
         context,
         { _, selectedHour, selectedMinute ->
-            viewModel.onRoutineChanged(routine.copy(hour=selectedHour, minute = selectedMinute))
+            viewModel.onRoutineChanged(routine.copy(hour= selectedHour.toByte(), minute = selectedMinute.toByte()))
         },
         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
     )
@@ -182,6 +186,21 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
                     timePickerDialog.show()
                 }, modifier = Modifier.fillMaxWidth()) {
                     Text("Heure: %02d:%02d".format(routine.hour, routine.minute))
+                }
+                Row {
+                    DayOfWeek.entries.forEach { day ->
+                        val isSelected = routine.daysOfWeek.contains(day)
+
+                        Button(onClick = {
+                            viewModel.onRoutineChanged(routine.copy(
+                                daysOfWeek = if (isSelected) routine.daysOfWeek - day else routine.daysOfWeek + day
+                            ))
+                        }, colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isSelected) Color.Blue else Color.Gray
+                        )) {
+                            Text(day.name.take(1))
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.height(200.dp))
             }
