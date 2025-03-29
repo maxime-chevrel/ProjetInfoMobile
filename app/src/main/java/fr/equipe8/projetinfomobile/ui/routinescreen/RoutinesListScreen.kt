@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import fr.equipe8.projetinfomobile.R
 import fr.equipe8.projetinfomobile.navigation.ScreenRoute
@@ -39,7 +40,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListViewModel, returnAction:Int = 0) {
+fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListViewModel= hiltViewModel()) {
     val routines = viewModel.routines.collectAsState()
 
     val sfFontFamily = FontFamily(
@@ -50,7 +51,7 @@ fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListView
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(true) {
-        when (returnAction) {
+        when (viewModel.returnAction) {
             1 -> scope.launch {
                 snackbarHostState.showSnackbar("Routine ajoutée avec succès") }
 

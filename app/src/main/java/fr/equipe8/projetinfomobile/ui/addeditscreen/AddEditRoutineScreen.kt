@@ -1,5 +1,6 @@
 package fr.equipe8.projetinfomobile.ui.addeditscreen
 
+import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -30,7 +32,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -46,18 +47,16 @@ import androidx.navigation.NavController
 import fr.equipe8.projetinfomobile.R
 import fr.equipe8.projetinfomobile.navigation.ScreenRoute
 import fr.equipe8.projetinfomobile.viewmodels.AddEditRoutineViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
+import kotlinx.coroutines.flow.collectLatest
 import java.time.DayOfWeek
 import java.util.Calendar
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
-    val viewModel: AddEditRoutineViewModel = hiltViewModel()
+fun AddEditRoutineScreen(navController: NavController,
+                         viewModel: AddEditRoutineViewModel= hiltViewModel()) {
     val routine by viewModel.routine.collectAsState()
-
     val sfFontFamily = FontFamily(
         Font(R.font.sf, FontWeight.Normal)
     )
@@ -67,18 +66,13 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
     val timePickerDialog = TimePickerDialog(
         context,
         { _, selectedHour, selectedMinute ->
-            viewModel.onRoutineChanged(routine.copy(hour= selectedHour.toByte(), minute = selectedMinute.toByte()))
+            viewModel.onEvent(AddEditRoutineEvent.ModifiedTime(selectedHour.toByte(),selectedMinute.toByte()))
         },
         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
     )
 
-    LaunchedEffect(routineId) {
-        viewModel.getRoutineById(routineId)
-    }
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-    var job: Job? = null
 
     Scaffold(
         topBar = {
@@ -86,7 +80,7 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
             TopAppBar(
                 title = {
                     Text(
-                        text = if (routineId == -1L) "Ajouter une routine" else "Modifier une routine",
+                        text = if (viewModel.routineId == -1L) "Ajouter une routine" else "Modifier une routine",
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                         fontFamily = sfFontFamily
@@ -111,35 +105,15 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
                 ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Retour")
                 }
-                if(routineId != -1L){
+                if(viewModel.routineId != -1L){
                     Button(onClick = {
-                        viewModel.deleteRoutine()
-                        navController.navigate(ScreenRoute.RoutinesListScreen.route+"?returnAction=3")
-                                     }) {
+                        viewModel.onEvent(AddEditRoutineEvent.DeleteRoutine)
+                    }) {
                         Text("Supprimer")
                     }
                 }
                 FloatingActionButton(onClick = {
-                    if (routineId == -1L) {
-                        if (viewModel.routine.value.name != "") {
-                            viewModel.addRoutine()
-                        } else {
-                            job?.cancel()
-                            job =scope.launch {
-                                snackbarHostState.showSnackbar("Un Nom est nécéssaire")
-                            }
-                            return@FloatingActionButton
-                        }
-                    } else if (viewModel.isRoutineEdited.value) {
-                        viewModel.saveRoutine()
-                    }
-                    if (routineId ==-1L){
-                        navController.navigate(ScreenRoute.RoutinesListScreen.route+"?returnAction=1")
-                    }
-                    else{
-                        navController.navigate(ScreenRoute.RoutinesListScreen.route+"?returnAction=2")
-                    }
-
+                        viewModel.onEvent(AddEditRoutineEvent.SaveRoutine)
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Check,
@@ -150,6 +124,21 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
         },
         snackbarHost = {SnackbarHost(hostState = snackbarHostState)}
     ) { contentPadding ->
+
+        LaunchedEffect(true) {
+            viewModel.eventFlow.collectLatest { event ->
+                when (event) {
+                    is AddEditRoutineUiEvent.SavedStory -> {
+                        navController.navigate(ScreenRoute.RoutinesListScreen.route
+                                +"?returnAction="+ event.returnAction.toString())
+                    }
+                    is AddEditRoutineUiEvent.ShowMessage -> {
+                        snackbarHostState.showSnackbar(event.message)
+                    }
+                }
+            }
+        }
+
         LazyColumn(
             modifier = Modifier
                 .padding(contentPadding)
@@ -162,7 +151,7 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
                     value = routine.name,
                     label = { Text("Nom") },
                     onValueChange = {
-                        viewModel.onRoutineChanged(routine.copy(name = it))
+                        viewModel.onEvent(AddEditRoutineEvent.EnteredName(it))
                     },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
@@ -174,7 +163,7 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
                     value = routine.description,
                     label = { Text("Description") },
                     onValueChange = {
-                        viewModel.onRoutineChanged(routine.copy(description = it))
+                        viewModel.onEvent(AddEditRoutineEvent.EnteredDescription(it))
                     },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
@@ -188,17 +177,28 @@ fun AddEditRoutineScreen(navController: NavController, routineId: Long?) {
                     Text("Heure: %02d:%02d".format(routine.hour, routine.minute))
                 }
                 Row {
-                    DayOfWeek.entries.forEach { day ->
-                        val isSelected = routine.daysOfWeek.contains(day)
+                    Text(text = "Répétition")
+                    Checkbox(
+                        checked = routine.repeat,
+                        onCheckedChange = {
+                            viewModel.onEvent(AddEditRoutineEvent.ModifiedRepetition)
+                        }
+                    )
+                }
+                if(viewModel.routine.value.repeat) {
+                    Row {
+                        DayOfWeek.entries.forEach { day ->
+                            val isSelected = routine.daysOfWeek.contains(day)
 
-                        Button(onClick = {
-                            viewModel.onRoutineChanged(routine.copy(
-                                daysOfWeek = if (isSelected) routine.daysOfWeek - day else routine.daysOfWeek + day
-                            ))
-                        }, colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isSelected) Color.Blue else Color.Gray
-                        )) {
-                            Text(day.name.take(1))
+                            Button(
+                                onClick = {
+                                    viewModel.onEvent(AddEditRoutineEvent.ModifiedDay(day))
+                                }, colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isSelected) Color.Blue else Color.Gray
+                                )
+                            ) {
+                                Text(day.name.take(1))
+                            }
                         }
                     }
                 }

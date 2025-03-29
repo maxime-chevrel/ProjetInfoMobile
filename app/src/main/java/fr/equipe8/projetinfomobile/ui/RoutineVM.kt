@@ -11,7 +11,8 @@ data class RoutineVM (
     val description : String = "",
     val hour: Byte = 0,
     val minute: Byte = 0,
-    val daysOfWeek: Set<DayOfWeek> = emptySet()
+    val daysOfWeek: Set<DayOfWeek> = emptySet(),
+    val repeat : Boolean = false
 ) {
     companion object {
         fun fromEntity(entity: Routine): RoutineVM {
@@ -21,7 +22,8 @@ data class RoutineVM (
                 description = entity.description,
                 hour = entity.hour,
                 minute = entity.minute,
-                daysOfWeek = entity.daysOfWeek.toDayOfWeekSet()
+                daysOfWeek = entity.daysOfWeek.toDayOfWeekSet(),
+                repeat = entity.repeat
             )
         }
     }
@@ -34,6 +36,7 @@ fun RoutineVM.toEntity(): Routine {
         description = this.description,
         hour = this.hour,
         minute = this.minute,
-        daysOfWeek = this.daysOfWeek.toBitmask()
+        daysOfWeek = this.daysOfWeek.toBitmask(),
+        repeat = this.repeat
     )
 }

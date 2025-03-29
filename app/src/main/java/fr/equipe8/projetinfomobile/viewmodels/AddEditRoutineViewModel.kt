@@ -1,57 +1,104 @@
 package fr.equipe8.projetinfomobile.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.equipe8.projetinfomobile.data.routines.RoutineRepository
 import fr.equipe8.projetinfomobile.ui.RoutineVM
+import fr.equipe8.projetinfomobile.ui.addeditscreen.AddEditRoutineUiEvent
+import fr.equipe8.projetinfomobile.ui.addeditscreen.AddEditRoutineEvent
+import fr.equipe8.projetinfomobile.ui.addeditscreen.RoutineAddException
 import fr.equipe8.projetinfomobile.ui.toEntity
+import fr.equipe8.projetinfomobile.usecases.RoutinesUseCases
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddEditRoutineViewModel @Inject constructor(
-    private val repository: RoutineRepository
+    private val routinesUseCases: RoutinesUseCases,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    val routineId :Long = savedStateHandle.get<Long>("routineId") ?: -1L
+
     private val _routine = MutableStateFlow(RoutineVM())
     val routine: StateFlow<RoutineVM> get() = _routine
 
-    private val _isRoutineEdited = MutableStateFlow(false)
-    val isRoutineEdited: StateFlow<Boolean> get() = _isRoutineEdited
+    private var isRoutineEdited =false
 
-    fun getRoutineById(routineId: Long?) {
-        viewModelScope.launch {
-            _routine.value = if (routineId != null && routineId != -1L) {
-                repository.getRoutineById(routineId)?.let { RoutineVM.fromEntity(it) } ?: RoutineVM()
-            } else {
-                RoutineVM()
+    private val _eventFlow = MutableSharedFlow<AddEditRoutineUiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            val routineEntity = routinesUseCases.getRoutineById(routineId)
+            _routine.value = routineEntity?.let { RoutineVM.fromEntity(it) } ?: RoutineVM()
+        }
+    }
+
+    fun onEvent(event : AddEditRoutineEvent) {
+        when (event) {
+            is AddEditRoutineEvent.EnteredName -> {
+                _routine.value = _routine.value.copy(name = event.name)
+                isRoutineEdited=true
             }
-        }
-    }
 
-    fun onRoutineChanged(routine: RoutineVM) {
-        _routine.value = routine
-        _isRoutineEdited.value = true
-    }
+            is AddEditRoutineEvent.EnteredDescription -> {
+                _routine.value = _routine.value.copy(description = event.description)
+                isRoutineEdited=true
 
-    fun saveRoutine() {
-        if (_isRoutineEdited.value) {
-            viewModelScope.launch {
-                repository.updateRoutine(_routine.value.toEntity())
             }
-        }
-    }
 
-    fun addRoutine() {
-        viewModelScope.launch {
-            repository.addRoutine(_routine.value.toEntity())
-        }
-    }
-    fun deleteRoutine() {
-        viewModelScope.launch {
-            repository.removeRoutine(_routine.value.toEntity())
+            is AddEditRoutineEvent.ModifiedDay -> {
+                val daysOfWeek = _routine.value.daysOfWeek
+                if (daysOfWeek.contains(event.day)) {
+                    _routine.value = _routine.value.copy(daysOfWeek = daysOfWeek - event.day)
+                } else {
+                    _routine.value = _routine.value.copy(daysOfWeek = daysOfWeek + event.day)
+                }
+                isRoutineEdited=true
+
+            }
+
+            is AddEditRoutineEvent.SaveRoutine -> {
+                if (isRoutineEdited||routineId==-1L) {
+                    viewModelScope.launch {
+                        try {
+                            routinesUseCases.upsertRoutine(_routine.value.toEntity())
+                            if (routineId == -1L) {
+                                _eventFlow.emit(AddEditRoutineUiEvent.SavedStory(1))
+                            } else {
+                                _eventFlow.emit(AddEditRoutineUiEvent.SavedStory(2))
+                            }
+                        } catch (e: RoutineAddException) {
+                            _eventFlow.emit(AddEditRoutineUiEvent.ShowMessage(e.message!!))
+                        }
+                    }
+                } else {
+                    viewModelScope.launch {
+                        _eventFlow.emit(AddEditRoutineUiEvent.SavedStory(0))
+                    }
+                }
+            }
+            is AddEditRoutineEvent.DeleteRoutine -> {
+                viewModelScope.launch {
+                    routinesUseCases.deleteRoutine(_routine.value.toEntity())
+                    _eventFlow.emit(AddEditRoutineUiEvent.SavedStory(3))
+                }
+            }
+            is AddEditRoutineEvent.ModifiedTime -> {
+                _routine.value = _routine.value.copy(hour = event.hour, minute = event.minute)
+                isRoutineEdited=true
+
+            }
+            is AddEditRoutineEvent.ModifiedRepetition -> {
+                _routine.value= _routine.value.copy(repeat = !_routine.value.repeat)
+                isRoutineEdited=true
+            }
         }
     }
 }
