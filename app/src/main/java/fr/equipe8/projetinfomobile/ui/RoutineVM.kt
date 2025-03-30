@@ -12,7 +12,7 @@ data class RoutineVM (
     val hour: Byte = 0,
     val minute: Byte = 0,
     val daysOfWeek: Set<DayOfWeek> = emptySet(),
-    val repeat : Boolean = false
+    val isActive : Boolean = true
 ) {
     companion object {
         fun fromEntity(entity: Routine): RoutineVM {
@@ -23,7 +23,7 @@ data class RoutineVM (
                 hour = entity.hour,
                 minute = entity.minute,
                 daysOfWeek = entity.daysOfWeek.toDayOfWeekSet(),
-                repeat = entity.repeat
+                isActive = entity.isActive
             )
         }
     }
@@ -37,6 +37,6 @@ fun RoutineVM.toEntity(): Routine {
         hour = this.hour,
         minute = this.minute,
         daysOfWeek = this.daysOfWeek.toBitmask(),
-        repeat = this.repeat
+        isActive = this.isActive
     )
 }

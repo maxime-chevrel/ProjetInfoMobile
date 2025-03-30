@@ -11,5 +11,5 @@ data class Routine(
     val hour: Byte = 0,
     val minute: Byte = 0,
     val daysOfWeek: Byte = 0,
-    val repeat: Boolean = false,
+    val isActive: Boolean = true,
 )

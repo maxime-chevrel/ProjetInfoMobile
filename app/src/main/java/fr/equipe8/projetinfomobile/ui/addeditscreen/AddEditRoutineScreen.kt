@@ -177,28 +177,26 @@ fun AddEditRoutineScreen(navController: NavController,
                     Text("Heure: %02d:%02d".format(routine.hour, routine.minute))
                 }
                 Row {
-                    Text(text = "Répétition")
+                    Text(text = "Routine Active")
                     Checkbox(
-                        checked = routine.repeat,
+                        checked = routine.isActive,
                         onCheckedChange = {
                             viewModel.onEvent(AddEditRoutineEvent.ModifiedRepetition)
                         }
                     )
                 }
-                if(viewModel.routine.value.repeat) {
-                    Row {
-                        DayOfWeek.entries.forEach { day ->
-                            val isSelected = routine.daysOfWeek.contains(day)
+                Row {
+                    DayOfWeek.entries.forEach { day ->
+                        val isSelected = routine.daysOfWeek.contains(day)
 
-                            Button(
-                                onClick = {
-                                    viewModel.onEvent(AddEditRoutineEvent.ModifiedDay(day))
-                                }, colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isSelected) Color.Blue else Color.Gray
-                                )
-                            ) {
-                                Text(day.name.take(1))
-                            }
+                        Button(
+                            onClick = {
+                                viewModel.onEvent(AddEditRoutineEvent.ModifiedDay(day))
+                            }, colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isSelected) Color.Blue else Color.Gray
+                            )
+                        ) {
+                            Text(day.name.take(1))
                         }
                     }
                 }

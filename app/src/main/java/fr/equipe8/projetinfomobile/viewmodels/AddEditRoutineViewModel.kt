@@ -96,7 +96,7 @@ class AddEditRoutineViewModel @Inject constructor(
 
             }
             is AddEditRoutineEvent.ModifiedRepetition -> {
-                _routine.value= _routine.value.copy(repeat = !_routine.value.repeat)
+                _routine.value= _routine.value.copy(isActive = !_routine.value.isActive)
                 isRoutineEdited=true
             }
         }
