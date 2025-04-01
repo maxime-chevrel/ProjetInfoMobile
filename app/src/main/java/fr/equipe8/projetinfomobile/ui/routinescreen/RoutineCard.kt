@@ -3,26 +3,41 @@ package fr.equipe8.projetinfomobile.ui.routinescreen
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import fr.equipe8.projetinfomobile.ui.RoutineVM
+import fr.equipe8.projetinfomobile.ui.theme.DarkText
+import fr.equipe8.projetinfomobile.ui.theme.DisableRoutineCardColor
+import fr.equipe8.projetinfomobile.ui.theme.RoutineCardColor
+import fr.equipe8.projetinfomobile.ui.theme.SecondaryText
 
 @Composable
 fun RoutineCard(routine: RoutineVM, onClick: () -> Unit) {
+
 
     Card(
         modifier = Modifier
@@ -30,7 +45,9 @@ fun RoutineCard(routine: RoutineVM, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp) // Pour l'effet d'omnbre
+
+        elevation = CardDefaults.cardElevation(if (routine.isActive) 8.dp else 0.dp),
+        colors = CardDefaults.cardColors(if (routine.isActive)  RoutineCardColor else DisableRoutineCardColor)
     ) {
         Column(
             modifier = Modifier
@@ -43,25 +60,58 @@ fun RoutineCard(routine: RoutineVM, onClick: () -> Unit) {
             ) {
                 Text(
                     text = routine.name,
-                    fontSize = 22.sp,
+                    style = typography.titleLarge,
                     maxLines = 1,
                     modifier = Modifier.weight(1f),
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = DarkText
                 )
                 Text(
                     text = "%02d:%02d".format(routine.hour, routine.minute),
                     textAlign = TextAlign.End,
-                    fontSize = 22.sp,
+                    style = typography.titleLarge,
                     maxLines = 1,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = routine.description,
-                fontSize = 16.sp,
-                maxLines = 3
+                style = typography.titleMedium,
+                maxLines = 3,
+                color = SecondaryText,
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Row (modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween) {
+
+
+                Button(
+                    onClick = {
+                        routine.isActive = !routine.isActive
+                    },
+                    modifier = Modifier.size(30.dp),
+                    shape = RoundedCornerShape(6.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                            containerColor = if (routine.isActive) MaterialTheme.colorScheme.primary else Color(0xFF363636))
+                ) {
+                    Icon(
+                        imageVector = if (routine.isActive) Icons.Default.PlayArrow else Icons.Default.Clear, contentDescription = "Activer/Désactiver")
+                }
+
+                Text(
+                    text = routine.daysOfWeek.joinToString(", ") { it.name.take(3) },
+                    textAlign = TextAlign.Right,
+                    style = typography.titleSmall,
+                    maxLines = 1
+                )
+            }
         }
     }
 }
+
+

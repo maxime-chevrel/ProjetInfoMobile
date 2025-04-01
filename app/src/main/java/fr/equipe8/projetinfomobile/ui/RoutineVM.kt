@@ -12,7 +12,7 @@ data class RoutineVM (
     val hour: Byte = 0,
     val minute: Byte = 0,
     val daysOfWeek: Set<DayOfWeek> = emptySet(),
-    val isActive : Boolean = true
+    var isActive : Boolean = true
 ) {
     companion object {
         fun fromEntity(entity: Routine): RoutineVM {
