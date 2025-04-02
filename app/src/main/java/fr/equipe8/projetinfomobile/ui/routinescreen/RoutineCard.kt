@@ -26,9 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import fr.equipe8.projetinfomobile.R
 import fr.equipe8.projetinfomobile.ui.RoutineVM
 import fr.equipe8.projetinfomobile.ui.addeditscreen.PeriodOptions
 import fr.equipe8.projetinfomobile.ui.theme.DarkText
@@ -103,7 +105,7 @@ fun RoutineCard(routine: RoutineVM, onClick: () -> Unit, onActive: () -> Unit) {
                             containerColor = if (routine.isActive) MaterialTheme.colorScheme.primary else Color(0xFF363636))
                 ) {
                     Icon(
-                        imageVector = if (routine.isActive) Icons.Default.PlayArrow else Icons.Default.Clear, contentDescription = "Activer/Désactiver")
+                        painter = painterResource(id = if (routine.isActive) R.drawable.routine_active else R.drawable.routine_inactive), contentDescription = "Activer/Désactiver")
                 }
                 if(routine.periodicity is PeriodOptions.CustomDays) {
                     Text(
