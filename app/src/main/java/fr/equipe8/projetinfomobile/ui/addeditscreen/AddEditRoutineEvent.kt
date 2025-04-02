@@ -7,7 +7,9 @@ sealed class AddEditRoutineEvent {
     data class EnteredDescription(val description: String): AddEditRoutineEvent()
     data class ModifiedDay(val day: DayOfWeek): AddEditRoutineEvent()
     data class ModifiedTime(val hour: Byte, val minute : Byte): AddEditRoutineEvent()
+    data class ModifiedPeriodicity(val periodOptions: PeriodOptions) : AddEditRoutineEvent()
     data object SaveRoutine: AddEditRoutineEvent()
     data object DeleteRoutine: AddEditRoutineEvent()
-    data object ModifiedRepetition: AddEditRoutineEvent()
+    data object ModifiedActive: AddEditRoutineEvent()
+
 }

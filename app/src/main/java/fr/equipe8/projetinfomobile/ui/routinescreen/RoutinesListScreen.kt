@@ -1,5 +1,6 @@
 package fr.equipe8.projetinfomobile.ui.routinescreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -44,7 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import fr.equipe8.projetinfomobile.navigation.ScreenRoute
 import fr.equipe8.projetinfomobile.viewmodels.RoutinesListViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,27 +55,13 @@ fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListView
 
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(true) {
-        when (viewModel.returnAction) {
-            1 -> scope.launch {
-                snackbarHostState.showSnackbar("Routine ajoutée avec succès") }
-
-            2 -> scope.launch {
-                snackbarHostState.showSnackbar("Routine modifiée avec succès") }
-
-            3 -> scope.launch {
-                snackbarHostState.showSnackbar("Routine supprimée avec succès") }
-        }
-    }
 
     Scaffold(
 
         floatingActionButton = {
             if(routines.value.isNotEmpty()) {
                 FloatingActionButton(onClick = {
-                    navController.navigate(ScreenRoute.AddEditRoutineScreen.route + "?routineId=-1") //-1 = New routine
+                    viewModel.onEvent(RoutinesListEvent.NewRoutine)
                 }) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -86,7 +73,6 @@ fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListView
         snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
         topBar = {
             Column {
-                // Pour afficher si on modifie/ajoute
                 TopAppBar(
                     title = {
                         Text(
@@ -100,7 +86,6 @@ fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListView
                                 textAlign = TextAlign.Center,
                                 fontWeight = FontWeight.Bold,
 
-                                //fontFamily = sfFontFamily
                             )
                         )
                     },
@@ -112,22 +97,40 @@ fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListView
             }
         }
         ) {contentPadding->
+
+        LaunchedEffect(Unit) {
+            Log.d("Snackbar", "Starting eventFlow collection")
+            viewModel.eventFlow.collectLatest { event ->
+                when (event) {
+                    is RoutinesListUiEvent.Navigate -> {
+                        navController.navigate(ScreenRoute.AddEditRoutineScreen.route + "?routineId=${event.id}")
+                    }
+                    is RoutinesListUiEvent.ShowMessage -> {
+                        snackbarHostState.showSnackbar(event.message)
+                    }
+                }
+            }
+        }
+
         Column {
             Spacer(modifier = Modifier.height(16.dp))
 
             if (routines.value.isEmpty()) {
                 EmptyListScreen(
-                    navController = navController,
                     modifier = Modifier.padding(contentPadding)
                 )
             }else{
                 LazyColumn(modifier = Modifier.padding(contentPadding)) {
                     itemsIndexed(routines.value) { _, routine ->
                         RoutineCard(
-                            routine
-                        ) {
-                            navController.navigate(ScreenRoute.AddEditRoutineScreen.route + "?routineId=${routine.id}")
-                        }
+                            routine,
+                         onClick = {
+                            viewModel.onEvent(RoutinesListEvent.RoutineClicked(routine.id))
+                        },
+                            onActive = {
+                                viewModel.onEvent(RoutinesListEvent.ActiveRoutineClicked(routine.id))
+                            }
+                        )
                     }
                     item {
                         Spacer(modifier = Modifier.padding(50.dp))
@@ -143,8 +146,8 @@ fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListView
 
 @Composable
 fun EmptyListScreen(
-    navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: RoutinesListViewModel = hiltViewModel(),
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -166,7 +169,7 @@ fun EmptyListScreen(
             Spacer(Modifier.height(24.dp))
             Button(
                 onClick = {
-                    navController.navigate("${ScreenRoute.AddEditRoutineScreen.route}?routineId=-1")
+                    viewModel.onEvent(RoutinesListEvent.NewRoutine)
                 },
                 shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth().shadow(elevation = 6.dp, shape = RoundedCornerShape(12.dp)).clip(
                     RoundedCornerShape(12.dp))

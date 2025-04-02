@@ -70,9 +70,9 @@ class AddEditRoutineViewModel @Inject constructor(
                         try {
                             routinesUseCases.upsertRoutine(_routine.value.toEntity())
                             if (routineId == -1L) {
-                                _eventFlow.emit(AddEditRoutineUiEvent.SavedStory(1))
+                                _eventFlow.emit(AddEditRoutineUiEvent.SavedRoutine(1))
                             } else {
-                                _eventFlow.emit(AddEditRoutineUiEvent.SavedStory(2))
+                                _eventFlow.emit(AddEditRoutineUiEvent.SavedRoutine(2))
                             }
                         } catch (e: RoutineAddException) {
                             _eventFlow.emit(AddEditRoutineUiEvent.ShowMessage(e.message!!))
@@ -80,14 +80,14 @@ class AddEditRoutineViewModel @Inject constructor(
                     }
                 } else {
                     viewModelScope.launch {
-                        _eventFlow.emit(AddEditRoutineUiEvent.SavedStory(0))
+                        _eventFlow.emit(AddEditRoutineUiEvent.SavedRoutine(0))
                     }
                 }
             }
             is AddEditRoutineEvent.DeleteRoutine -> {
                 viewModelScope.launch {
                     routinesUseCases.deleteRoutine(_routine.value.toEntity())
-                    _eventFlow.emit(AddEditRoutineUiEvent.SavedStory(3))
+                    _eventFlow.emit(AddEditRoutineUiEvent.SavedRoutine(3))
                 }
             }
             is AddEditRoutineEvent.ModifiedTime -> {
@@ -95,8 +95,12 @@ class AddEditRoutineViewModel @Inject constructor(
                 isRoutineEdited=true
 
             }
-            is AddEditRoutineEvent.ModifiedRepetition -> {
+            is AddEditRoutineEvent.ModifiedActive -> {
                 _routine.value= _routine.value.copy(isActive = !_routine.value.isActive)
+                isRoutineEdited=true
+            }
+            is AddEditRoutineEvent.ModifiedPeriodicity -> {
+                _routine.value = _routine.value.copy(periodicity = event.periodOptions)
                 isRoutineEdited=true
             }
         }

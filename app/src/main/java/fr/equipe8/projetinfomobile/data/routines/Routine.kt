@@ -5,11 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "routines")
 data class Routine(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name :String = "",
     val description : String = "",
     val hour: Byte = 0,
     val minute: Byte = 0,
     val daysOfWeek: Byte = 0,
     val isActive: Boolean = true,
+    val periodicity: Int = 0,
 )

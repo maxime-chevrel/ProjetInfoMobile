@@ -2,6 +2,7 @@ package fr.equipe8.projetinfomobile.ui.addeditscreen
 
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
+import android.view.ContextThemeWrapper
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -59,6 +60,9 @@ import fr.equipe8.projetinfomobile.viewmodels.AddEditRoutineViewModel
 import kotlinx.coroutines.flow.collectLatest
 import java.time.DayOfWeek
 import java.util.Calendar
+import fr.equipe8.projetinfomobile.R
+import java.time.format.TextStyle
+import java.util.Locale
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,7 +74,7 @@ fun AddEditRoutineScreen(navController: NavController,
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val timePickerDialog = TimePickerDialog(
-        context,
+        ContextThemeWrapper(context, R.style.CustomTimePickerDialog),
         { _, selectedHour, selectedMinute ->
             viewModel.onEvent(AddEditRoutineEvent.ModifiedTime(selectedHour.toByte(),selectedMinute.toByte()))
         },
@@ -79,6 +83,8 @@ fun AddEditRoutineScreen(navController: NavController,
 
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+
 
     Scaffold(
         topBar = {
@@ -141,7 +147,7 @@ fun AddEditRoutineScreen(navController: NavController,
         LaunchedEffect(true) {
             viewModel.eventFlow.collectLatest { event ->
                 when (event) {
-                    is AddEditRoutineUiEvent.SavedStory -> {
+                    is AddEditRoutineUiEvent.SavedRoutine -> {
                         navController.navigate(ScreenRoute.RoutinesListScreen.route
                                 +"?returnAction="+ event.returnAction.toString())
                     }
@@ -206,13 +212,14 @@ fun AddEditRoutineScreen(navController: NavController,
                     Checkbox(
                         checked = routine.isActive,
                         onCheckedChange = {
-                            viewModel.onEvent(AddEditRoutineEvent.ModifiedRepetition)
+                            viewModel.onEvent(AddEditRoutineEvent.ModifiedActive)
                         }
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
 
-                DropBoxMenu()
+                DropBoxMenu(viewModel)
+                Spacer(modifier = Modifier.height(200.dp))
             }
         }
     }
@@ -221,14 +228,11 @@ fun AddEditRoutineScreen(navController: NavController,
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
-fun DropBoxMenu (viewModel: AddEditRoutineViewModel= hiltViewModel()){
+fun DropBoxMenu (viewModel: AddEditRoutineViewModel){
 
     val routine by viewModel.routine.collectAsState()
 
-    val periodOptions = listOf("Tous les jours", "Personnalisé...", "Aucun")
     var expanded by remember { mutableStateOf(false) }
-    var selectPeriodicity by remember { mutableStateOf(periodOptions[0]) }
-
 
 ExposedDropdownMenuBox(
         expanded = expanded,
@@ -236,9 +240,11 @@ ExposedDropdownMenuBox(
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = selectPeriodicity,
+            value = routine.periodicity.name,
             label = { Text(text = "Périodicité", style = MaterialTheme.typography.titleSmall) },
-            onValueChange = {},
+            onValueChange = {
+
+            },
             readOnly = true,
             modifier = Modifier.menuAnchor(),
             trailingIcon =  {
@@ -252,13 +258,14 @@ ExposedDropdownMenuBox(
             onDismissRequest = { expanded = false },
             modifier = Modifier.exposedDropdownSize()
         ) {
-            periodOptions.forEach { periodicity ->
-                DropdownMenuItem(
-                    text = { Text(text = periodicity, style = MaterialTheme.typography.titleMedium)  },
-                    onClick = {
-                        selectPeriodicity = periodicity
-                        expanded = false
 
+            PeriodOptions.getTab().forEach{ periodOptions ->
+
+                DropdownMenuItem(
+                    text = { Text(text = periodOptions.name, style = MaterialTheme.typography.titleMedium)  },
+                    onClick = {
+                        viewModel.onEvent(AddEditRoutineEvent.ModifiedPeriodicity(periodOptions))
+                        expanded = false
                     }
                 )
             }
@@ -266,7 +273,7 @@ ExposedDropdownMenuBox(
 
     }
 
-    if (selectPeriodicity == "Personnalisé...") {
+    if (routine.periodicity is PeriodOptions.CustomDays) {
         FlowRow(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -287,15 +294,14 @@ ExposedDropdownMenuBox(
 
                         ) {
                         Text(
-                            text = day.name,
+                            text = day.getDisplayName(TextStyle.FULL, Locale.FRANCE),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
-
                 }
-
             }
         }
     }
 }
+

@@ -30,13 +30,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.equipe8.projetinfomobile.ui.RoutineVM
+import fr.equipe8.projetinfomobile.ui.addeditscreen.PeriodOptions
 import fr.equipe8.projetinfomobile.ui.theme.DarkText
 import fr.equipe8.projetinfomobile.ui.theme.DisableRoutineCardColor
 import fr.equipe8.projetinfomobile.ui.theme.RoutineCardColor
 import fr.equipe8.projetinfomobile.ui.theme.SecondaryText
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
-fun RoutineCard(routine: RoutineVM, onClick: () -> Unit) {
+fun RoutineCard(routine: RoutineVM, onClick: () -> Unit, onActive: () -> Unit) {
 
 
     Card(
@@ -91,7 +94,7 @@ fun RoutineCard(routine: RoutineVM, onClick: () -> Unit) {
 
                 Button(
                     onClick = {
-                        routine.isActive = !routine.isActive
+                        onActive()
                     },
                     modifier = Modifier.size(30.dp),
                     shape = RoundedCornerShape(6.dp),
@@ -102,13 +105,27 @@ fun RoutineCard(routine: RoutineVM, onClick: () -> Unit) {
                     Icon(
                         imageVector = if (routine.isActive) Icons.Default.PlayArrow else Icons.Default.Clear, contentDescription = "Activer/Désactiver")
                 }
-
-                Text(
-                    text = routine.daysOfWeek.joinToString(", ") { it.name.take(3) },
-                    textAlign = TextAlign.Right,
-                    style = typography.titleSmall,
-                    maxLines = 1
-                )
+                if(routine.periodicity is PeriodOptions.CustomDays) {
+                    Text(
+                        text = routine.daysOfWeek.joinToString(", ") {
+                            it.getDisplayName(
+                                TextStyle.SHORT,
+                                Locale.FRANCE
+                            )
+                        },
+                        textAlign = TextAlign.Right,
+                        style = typography.titleSmall,
+                        maxLines = 1
+                    )
+                }
+                else if(routine.periodicity is PeriodOptions.AllDays) {
+                    Text(
+                        text = "Chaque Jours",
+                        textAlign = TextAlign.Right,
+                        style = typography.titleSmall,
+                        maxLines = 1
+                    )
+                }
             }
         }
     }

@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.ProjetInfoMobile" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="CustomTimePickerDialog" parent="android:Theme.Material.Light.Dialog.Alert">
+        <item name="android:colorAccent">#465b8d</item> <!-- Couleur du sélecteur -->
+    </style>
+
 </resources>
