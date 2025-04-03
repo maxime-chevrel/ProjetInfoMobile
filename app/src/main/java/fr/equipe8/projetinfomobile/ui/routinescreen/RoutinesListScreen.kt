@@ -1,6 +1,7 @@
 package fr.equipe8.projetinfomobile.ui.routinescreen
 
 import android.util.Log
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,11 +32,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -122,12 +123,15 @@ fun RoutinesListScreen(navController: NavController, viewModel: RoutinesListView
             }else{
                 LazyColumn(modifier = Modifier.padding(contentPadding)) {
                     itemsIndexed(routines.value) { _, routine ->
+                        val view = LocalView.current
                         RoutineCard(
                             routine,
                          onClick = {
                             viewModel.onEvent(RoutinesListEvent.RoutineClicked(routine.id))
                         },
                             onActive = {
+
+                                view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
                                 viewModel.onEvent(RoutinesListEvent.ActiveRoutineClicked(routine.id))
                             }
                         )

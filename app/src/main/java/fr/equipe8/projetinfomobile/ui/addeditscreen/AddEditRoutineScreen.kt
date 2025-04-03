@@ -3,6 +3,7 @@ package fr.equipe8.projetinfomobile.ui.addeditscreen
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.view.ContextThemeWrapper
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -47,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -55,13 +57,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import fr.equipe8.projetinfomobile.R
 import fr.equipe8.projetinfomobile.navigation.ScreenRoute
 import fr.equipe8.projetinfomobile.viewmodels.AddEditRoutineViewModel
 import kotlinx.coroutines.flow.collectLatest
 import java.time.DayOfWeek
-import java.util.Calendar
-import fr.equipe8.projetinfomobile.R
 import java.time.format.TextStyle
+import java.util.Calendar
 import java.util.Locale
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -143,7 +145,6 @@ fun AddEditRoutineScreen(navController: NavController,
         },
         snackbarHost = {SnackbarHost(hostState = snackbarHostState)}
     ) { contentPadding ->
-
         LaunchedEffect(true) {
             viewModel.eventFlow.collectLatest { event ->
                 when (event) {
@@ -281,9 +282,10 @@ ExposedDropdownMenuBox(
             DayOfWeek.entries.forEach { day ->
                 val isSelected = routine.daysOfWeek.contains(day)
                 FlowRow(Modifier.align(Alignment.CenterVertically)) {
-
+                    val view = LocalView.current
                     Button(
                         onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
                             viewModel.onEvent(AddEditRoutineEvent.ModifiedDay(day))
                         },
                         colors = ButtonDefaults.buttonColors(
