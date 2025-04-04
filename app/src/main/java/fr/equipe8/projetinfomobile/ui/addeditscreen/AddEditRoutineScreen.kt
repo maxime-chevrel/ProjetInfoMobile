@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -81,12 +82,14 @@ fun AddEditRoutineScreen(navController: NavController,
         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
     )
 
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
 
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
@@ -100,14 +103,15 @@ fun AddEditRoutineScreen(navController: NavController,
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                ),modifier = Modifier.shadow(10.dp)
+                ),modifier = Modifier.shadow(10.dp),
+                scrollBehavior = scrollBehavior
             )
         },
         floatingActionButton = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween //
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 FloatingActionButton(
                     onClick = {
