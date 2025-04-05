@@ -52,7 +52,7 @@ class NotificationsHelper @Inject constructor(
                 else 0
 
                 val clickPendingIntent = PendingIntent.getActivity(
-                    context, 1, intent, flag
+                    context, routineId, intent, flag
                 )
                 val notification = notificationBuilder
                     .setContentTitle(title)
