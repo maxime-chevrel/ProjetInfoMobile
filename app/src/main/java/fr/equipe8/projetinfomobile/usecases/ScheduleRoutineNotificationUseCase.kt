@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit
 
 class ScheduleRoutineNotificationUseCase(private val context: Context) {
     operator fun invoke(routine: RoutineVM){
+        if (!routine.isActive) return
        WorkManager.getInstance(context).cancelAllWorkByTag("routine_${routine.id}")
         if (routine.periodicity == PeriodOptions.CustomDays) {
             for (day in routine.daysOfWeek) {
