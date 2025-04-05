@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import fr.equipe8.projetinfomobile.notifications.NotificationsHelper
 import fr.equipe8.projetinfomobile.ui.RoutineVM
 import fr.equipe8.projetinfomobile.ui.routinescreen.RoutinesListEvent
 import fr.equipe8.projetinfomobile.ui.routinescreen.RoutinesListUiEvent
@@ -23,11 +24,13 @@ import javax.inject.Inject
 @HiltViewModel
 class RoutinesListViewModel @Inject constructor(
     private val routinesUseCases: RoutinesUseCases,
+    private val notificationsHelper: NotificationsHelper,
     savedStateHandle: SavedStateHandle
-    ): ViewModel() {
+): ViewModel() {
 
     private val _routines = MutableStateFlow<List<RoutineVM>>(emptyList())
     val routines: StateFlow<List<RoutineVM>> get() = _routines
+
 
     private val _eventFlow = MutableSharedFlow<RoutinesListUiEvent>(replay = 1)
     val eventFlow = _eventFlow.asSharedFlow()
@@ -78,9 +81,16 @@ class RoutinesListViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     val routine = routinesUseCases.getRoutineById(event.id)
                     routine?.let {
+                        if (it.isActive) {
+                            routinesUseCases.cancelRoutineNotification(RoutineVM.fromEntity(it))
+                        } else {
+                            routinesUseCases.scheduleRoutineNotification(RoutineVM.fromEntity(it))
+                        }
                         routinesUseCases.upsertRoutine(it.copy(isActive = !it.isActive))
                         _eventFlow.emit(RoutinesListUiEvent.ShowMessage("Routine ${if (it.isActive) "désactivée" else "activée"}"))
                         fetchRoutines()
+                        //notificationsHelper.showRoutineNotification(it.name,it.description, it.id)
+
                     }
                 }
             }

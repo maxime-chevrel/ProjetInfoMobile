@@ -96,7 +96,7 @@ fun AddEditRoutineScreen(navController: NavController,
             TopAppBar(
                 title = {
                     Text(
-                        text = if (viewModel.routineId == -1L) "Ajouter une routine" else "Modifier une routine",
+                        text = if (viewModel.routineId == -1) "Ajouter une routine" else "Modifier une routine",
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                         fontSize = 25.sp,
@@ -123,7 +123,7 @@ fun AddEditRoutineScreen(navController: NavController,
                 ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Retour")
                 }
-                if(viewModel.routineId != -1L){
+                if(viewModel.routineId != -1){
                     Button(onClick = {
                         viewModel.onEvent(AddEditRoutineEvent.DeleteRoutine)
                     },shape = RoundedCornerShape(12.dp),

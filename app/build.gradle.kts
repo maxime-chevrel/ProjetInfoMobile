@@ -82,6 +82,16 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // WorkManager
+
+    implementation(libs.androidx.work.runtime.ktx)
+
+
+    // Hilt pour Worker
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.androidx.hilt.compiler)
+
 }
 java {
     toolchain {

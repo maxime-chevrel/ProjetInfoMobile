@@ -4,5 +4,7 @@ data class RoutinesUseCases(
     val getAllRoutines: GetAllRoutinesUseCase,
     val getRoutineById: GetRoutineByIdUseCase,
     val upsertRoutine: UpsertRoutineUseCase,
-    val deleteRoutine: DeleteRoutineUseCase
+    val deleteRoutine: DeleteRoutineUseCase,
+    val scheduleRoutineNotification: ScheduleRoutineNotificationUseCase,
+    val cancelRoutineNotification: CancelRoutineNotificationUseCase,
 )

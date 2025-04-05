@@ -8,7 +8,7 @@ import kotlin.jvm.Throws
 
 class UpsertRoutineUseCase(private val routineRepository: RoutineRepository) {
     @Throws(RoutineAddException::class)
-    suspend operator fun invoke(routine: Routine){
+    suspend operator fun invoke(routine: Routine) : Int{
         if(routine.name.isBlank()){
             throw RoutineAddException("Un Nom est nécessaire")
         }
@@ -18,6 +18,6 @@ class UpsertRoutineUseCase(private val routineRepository: RoutineRepository) {
         ){
             throw RoutineAddException("Il faut au moins un jour de la semaine")
         }
-        return routineRepository.upsertRoutine(routine)
+        return routineRepository.upsertRoutine(routine).toInt()
     }
 }

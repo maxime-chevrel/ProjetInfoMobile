@@ -7,7 +7,7 @@ import fr.equipe8.projetinfomobile.ui.addeditscreen.PeriodOptions
 import java.time.DayOfWeek
 
 data class RoutineVM (
-    val id: Long = 0,
+    val id: Int = 0,
     val name :String = "",
     val description : String = "",
     val hour: Byte = 0,

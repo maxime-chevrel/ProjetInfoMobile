@@ -23,7 +23,7 @@ class AddEditRoutineViewModel @Inject constructor(
     private val routinesUseCases: RoutinesUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    val routineId :Long = savedStateHandle.get<Long>("routineId") ?: -1L
+    val routineId :Int = savedStateHandle.get<Int>("routineId") ?: -1
 
     private val _routine = MutableStateFlow(RoutineVM())
     val routine: StateFlow<RoutineVM> get() = _routine
@@ -66,11 +66,17 @@ class AddEditRoutineViewModel @Inject constructor(
             }
 
             is AddEditRoutineEvent.SaveRoutine -> {
-                if (isRoutineEdited||routineId==-1L) {
+                if (isRoutineEdited||routineId==-1) {
                     viewModelScope.launch {
                         try {
-                            routinesUseCases.upsertRoutine(_routine.value.toEntity())
-                            if (routineId == -1L) {
+                            val upsertResult = routinesUseCases.upsertRoutine(_routine.value.toEntity())
+                            val rId : Int= if (routineId == -1) upsertResult else routineId
+
+                            _routine.value = _routine.value.copy(id = rId)
+
+                            routinesUseCases.scheduleRoutineNotification(_routine.value)
+
+                            if (routineId == -1) {
                                 _eventFlow.emit(AddEditRoutineUiEvent.SavedRoutine(1))
                             } else {
                                 _eventFlow.emit(AddEditRoutineUiEvent.SavedRoutine(2))
@@ -88,6 +94,7 @@ class AddEditRoutineViewModel @Inject constructor(
             is AddEditRoutineEvent.DeleteRoutine -> {
                 viewModelScope.launch {
                     routinesUseCases.deleteRoutine(_routine.value.toEntity())
+                    routinesUseCases.cancelRoutineNotification(_routine.value)
                     _eventFlow.emit(AddEditRoutineUiEvent.SavedRoutine(3))
                 }
             }

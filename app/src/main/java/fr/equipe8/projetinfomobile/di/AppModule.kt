@@ -9,11 +9,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import fr.equipe8.projetinfomobile.data.routines.RoutineDatabase
 import fr.equipe8.projetinfomobile.data.routines.RoutineRepository
+import fr.equipe8.projetinfomobile.usecases.CancelRoutineNotificationUseCase
 import fr.equipe8.projetinfomobile.usecases.DeleteRoutineUseCase
 import fr.equipe8.projetinfomobile.usecases.GetAllRoutinesUseCase
 import fr.equipe8.projetinfomobile.usecases.GetRoutineByIdUseCase
 import fr.equipe8.projetinfomobile.usecases.UpsertRoutineUseCase
 import fr.equipe8.projetinfomobile.usecases.RoutinesUseCases
+import fr.equipe8.projetinfomobile.usecases.ScheduleRoutineNotificationUseCase
 import javax.inject.Singleton
 
 @Module
@@ -38,12 +40,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRoutinesUseCases(routineRepository: RoutineRepository): RoutinesUseCases {
+    fun provideRoutinesUseCases(@ApplicationContext context: Context ,routineRepository: RoutineRepository): RoutinesUseCases {
         return RoutinesUseCases(
             getAllRoutines = GetAllRoutinesUseCase(routineRepository),
             getRoutineById = GetRoutineByIdUseCase(routineRepository),
             upsertRoutine = UpsertRoutineUseCase(routineRepository),
-            deleteRoutine = DeleteRoutineUseCase(routineRepository)
+            deleteRoutine = DeleteRoutineUseCase(routineRepository),
+            scheduleRoutineNotification = ScheduleRoutineNotificationUseCase(context),
+            cancelRoutineNotification = CancelRoutineNotificationUseCase(context)
         )
     }
 }
