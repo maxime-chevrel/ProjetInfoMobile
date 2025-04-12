@@ -12,6 +12,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.equipe8.projetinfomobile.MainActivity
+import fr.equipe8.projetinfomobile.R
 import javax.inject.Inject
 
 
@@ -55,6 +56,7 @@ class NotificationsHelper @Inject constructor(
                     context, routineId, intent, flag
                 )
                 val notification = notificationBuilder
+                    .setSmallIcon(R.drawable.ic_stat_name)
                     .setContentTitle(title)
                     .setContentText(content)
                     .setContentIntent(clickPendingIntent)
