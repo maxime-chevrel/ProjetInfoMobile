@@ -30,10 +30,43 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ImportRoutineActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Pour fichier .routine depuis un FileProvider ou file:// URI -->
+                <data
+                    android:host="*"
+                    android:scheme="content"
+                    android:mimeType="application/octet-stream"
+                    android:pathPattern=".*\\.routine" />
+
+                <data
+                    android:scheme="file"
+                    android:mimeType="application/octet-stream"
+                    android:pathPattern=".*\\.routine" />
+            </intent-filter>
+        </activity>
+
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove">
+        </provider>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="fr.equipe8.projetinfomobile.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_path" />
         </provider>
 
 

@@ -7,4 +7,5 @@ data class RoutinesUseCases(
     val deleteRoutine: DeleteRoutineUseCase,
     val scheduleRoutineNotification: ScheduleRoutineNotificationUseCase,
     val cancelRoutineNotification: CancelRoutineNotificationUseCase,
+    val shareRoutine: ShareUseCase,
 )

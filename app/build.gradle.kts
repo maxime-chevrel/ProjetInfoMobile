@@ -92,6 +92,8 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     kapt(libs.androidx.hilt.compiler)
 
+    implementation(libs.gson)
+
 }
 java {
     toolchain {

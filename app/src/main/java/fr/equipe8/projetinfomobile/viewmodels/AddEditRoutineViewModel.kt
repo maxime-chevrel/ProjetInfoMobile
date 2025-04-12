@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditRoutineViewModel @Inject constructor(
-    private val routinesUseCases: RoutinesUseCases,
+    val routinesUseCases: RoutinesUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     val routineId :Int = savedStateHandle.get<Int>("routineId") ?: -1
@@ -110,6 +110,11 @@ class AddEditRoutineViewModel @Inject constructor(
             is AddEditRoutineEvent.ModifiedPeriodicity -> {
                 _routine.value = _routine.value.copy(periodicity = event.periodOptions)
                 isRoutineEdited=true
+            }
+            is AddEditRoutineEvent.ShareRoutine ->{
+                viewModelScope.launch {
+                    _eventFlow.emit(AddEditRoutineUiEvent.ShareRoutine(_routine.value.toEntity()))
+                }
             }
         }
     }

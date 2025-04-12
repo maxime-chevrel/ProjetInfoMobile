@@ -112,7 +112,9 @@ fun AddEditRoutineScreen(navController: NavController,
                 scrollBehavior = scrollBehavior,
 
                 actions = {if (viewModel.routineId != -1) {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = {
+                        viewModel.onEvent(AddEditRoutineEvent.ShareRoutine)
+                    }) {
                         Icon(imageVector = Icons.Default.Share, contentDescription = "Partager")
                     }
                 }
@@ -169,6 +171,9 @@ fun AddEditRoutineScreen(navController: NavController,
                     }
                     is AddEditRoutineUiEvent.ShowMessage -> {
                         snackbarHostState.showSnackbar(event.message)
+                    }
+                    is AddEditRoutineUiEvent.ShareRoutine -> {
+                        viewModel.routinesUseCases.shareRoutine(context, event.routine)
                     }
                 }
             }

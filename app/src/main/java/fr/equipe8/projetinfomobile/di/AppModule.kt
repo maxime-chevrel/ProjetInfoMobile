@@ -13,9 +13,10 @@ import fr.equipe8.projetinfomobile.usecases.CancelRoutineNotificationUseCase
 import fr.equipe8.projetinfomobile.usecases.DeleteRoutineUseCase
 import fr.equipe8.projetinfomobile.usecases.GetAllRoutinesUseCase
 import fr.equipe8.projetinfomobile.usecases.GetRoutineByIdUseCase
-import fr.equipe8.projetinfomobile.usecases.UpsertRoutineUseCase
 import fr.equipe8.projetinfomobile.usecases.RoutinesUseCases
 import fr.equipe8.projetinfomobile.usecases.ScheduleRoutineNotificationUseCase
+import fr.equipe8.projetinfomobile.usecases.ShareUseCase
+import fr.equipe8.projetinfomobile.usecases.UpsertRoutineUseCase
 import javax.inject.Singleton
 
 @Module
@@ -40,14 +41,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRoutinesUseCases(@ApplicationContext context: Context ,routineRepository: RoutineRepository): RoutinesUseCases {
+    fun provideRoutinesUseCases(@ApplicationContext context: Context, routineRepository: RoutineRepository): RoutinesUseCases {
         return RoutinesUseCases(
             getAllRoutines = GetAllRoutinesUseCase(routineRepository),
             getRoutineById = GetRoutineByIdUseCase(routineRepository),
             upsertRoutine = UpsertRoutineUseCase(routineRepository),
             deleteRoutine = DeleteRoutineUseCase(routineRepository),
             scheduleRoutineNotification = ScheduleRoutineNotificationUseCase(context),
-            cancelRoutineNotification = CancelRoutineNotificationUseCase(context)
+            cancelRoutineNotification = CancelRoutineNotificationUseCase(context),
+            shareRoutine = ShareUseCase()
         )
     }
 }

@@ -11,5 +11,6 @@ sealed class AddEditRoutineEvent {
     data object SaveRoutine: AddEditRoutineEvent()
     data object DeleteRoutine: AddEditRoutineEvent()
     data object ModifiedActive: AddEditRoutineEvent()
+    data object ShareRoutine: AddEditRoutineEvent()
 
 }
