@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -27,7 +28,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -97,7 +100,7 @@ fun AddEditRoutineScreen(navController: NavController,
                 title = {
                     Text(
                         text = if (viewModel.routineId == -1) "Ajouter une routine" else "Modifier une routine",
-                        textAlign = TextAlign.Center,
+                        textAlign = if (viewModel.routineId != -1)TextAlign.Left else TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
@@ -106,8 +109,16 @@ fun AddEditRoutineScreen(navController: NavController,
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),modifier = Modifier.shadow(10.dp),
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+
+                actions = {if (viewModel.routineId != -1) {
+                    IconButton(onClick = { }) {
+                        Icon(imageVector = Icons.Default.Share, contentDescription = "Partager")
+                    }
+                }
+                }
             )
+
         },
         floatingActionButton = {
             Row(
@@ -251,7 +262,7 @@ ExposedDropdownMenuBox(
 
             },
             readOnly = true,
-            modifier = Modifier.menuAnchor(),
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable, true),
             trailingIcon =  {
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown, contentDescription = "Parcourir"
