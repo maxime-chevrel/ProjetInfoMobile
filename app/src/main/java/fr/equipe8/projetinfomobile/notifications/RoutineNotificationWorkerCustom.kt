@@ -51,7 +51,7 @@ class RoutineNotificationWorkerCustom @AssistedInject constructor (
         )
 
         Log.d( "Schedule Routine Notification id: $routineId" ,
-            convertMillisToString(nextDelayMillis)
+            title+ " : " + convertMillisToString(nextDelayMillis)
         )
 
         val constraints = Constraints.Builder()

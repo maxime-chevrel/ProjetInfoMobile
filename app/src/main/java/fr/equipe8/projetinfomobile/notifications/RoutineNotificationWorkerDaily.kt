@@ -49,7 +49,7 @@ class RoutineNotificationWorkerDaily @AssistedInject constructor (
             "ROUTINE_ID" to routineId,
         )
         Log.d( "Schedule Routine Notification id: $routineId" ,
-            convertMillisToString(nextDelayMillis)
+            title + " : " + convertMillisToString(nextDelayMillis)
         )
         val constraints = Constraints.Builder()
             .setRequiresBatteryNotLow(true)  // Ne pas suspendre si la batterie est faible

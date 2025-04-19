@@ -46,7 +46,8 @@ class ImportRoutineActivity : ComponentActivity() {
             val json = inputStream?.bufferedReader()?.use { it.readText() }
             val routine = Gson().fromJson(json, Routine::class.java)
             lifecycleScope.launch {
-                val id : Int  = routinesUseCases.upsertRoutine(routine.copy(id=0))
+                val id : Int  = routinesUseCases.upsertRoutine(routine.copy(id=0, isActive = false))
+                Log.d("ImportRoutineActivity", "Routine importée avec succès : $id")
                 val intent = Intent(this@ImportRoutineActivity, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     putExtra("routineId", id)

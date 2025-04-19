@@ -81,8 +81,8 @@ class RoutinesListViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     var routine = routinesUseCases.getRoutineById(event.id)
                     routine?.let {
-                        val newid = routinesUseCases.upsertRoutine(it.copy(isActive = !it.isActive))
-                        routine = routine!!.copy(isActive = !routine!!.isActive, id = newid)
+                        routinesUseCases.upsertRoutine(it.copy(isActive = !it.isActive))
+                        routine = it.copy(isActive = !it.isActive)
                         if (it.isActive) {
                             routinesUseCases.cancelRoutineNotification(RoutineVM.fromEntity(routine!!))
                         } else {
@@ -90,7 +90,6 @@ class RoutinesListViewModel @Inject constructor(
                         }
                         _eventFlow.emit(RoutinesListUiEvent.ShowMessage("Routine ${if (it.isActive) "désactivée" else "activée"}"))
                         fetchRoutines()
-                        //notificationsHelper.showRoutineNotification(it.name,it.description, it.id)
 
                     }
                 }

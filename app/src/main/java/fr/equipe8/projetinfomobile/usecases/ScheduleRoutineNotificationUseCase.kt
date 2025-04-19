@@ -50,7 +50,8 @@ class ScheduleRoutineNotificationUseCase(private val context: Context) {
                 }
 
                 val delayMillis = Duration.between(now, next).toMillis()
-                Log.d( "Schedule Routine Notification id: ${routine.id}" ,convertMillisToString(delayMillis))
+                Log.d( "Schedule Routine Notification id: ${routine.id}" ,
+                    routine.name+ " : " + convertMillisToString(delayMillis))
                 val constraints = Constraints.Builder()
                     .setRequiresBatteryNotLow(true)  // Ne pas suspendre si la batterie est faible
                     .setRequiresCharging(false)  // Permet de fonctionner même sans charge
@@ -81,7 +82,8 @@ class ScheduleRoutineNotificationUseCase(private val context: Context) {
             }
             val delayMillis = Duration.between(now, next).toMillis()
 
-            Log.d( "Schedule Routine Notification id: ${routine.id}" ,convertMillisToString(delayMillis))
+            Log.d( "Schedule Routine Notification id: ${routine.id}" ,
+                routine.name+ " : " + convertMillisToString(delayMillis))
 
             val constraints = Constraints.Builder()
                 .setRequiresBatteryNotLow(true)  // Ne pas suspendre si la batterie est faible
